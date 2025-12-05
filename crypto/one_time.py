@@ -1,60 +1,33 @@
-from BaseCipher import BaseCipher
+from crypto.BaseCipher import BaseCipher
+import random
 
+class OneTimePad(BaseCipher):
 
-class oneTime(BaseCipher):
-    def __init__(self, key):
-        self.key = key
+    def __init__(self, key=None):
+        self.key = key  
+
+    def prepare_key(self, length=None):
+        """Generate random key if self.key is None."""
+        if not self.key:
+            self.key = ''.join(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for _ in range(length))
+        return self.key
 
     def encrypt(self, plaintext):
-        pass
+        plaintext = self.normalize(plaintext)
+        # generate key if not present
+        self.prepare_key(length=len(plaintext))
+        cipher = ""
+        for p, k in zip(plaintext, self.key):
+            c = (self.char_to_int(p) + self.char_to_int(k)) % 26
+            cipher += self.int_to_char(c)
+        return cipher
 
     def decrypt(self, ciphertext):
-        pass
-import random
-import string
-
-def generate_random_key(length):
-    """Generate a random key of uppercase letters."""
-    return ''.join(random.choice(string.ascii_uppercase) for _ in range(length))
-
-def encrypt(plain_text, key=None):
-    """Encrypt plain_text using OTP. If key not provided, create random one."""
-    plain_text = plain_text.upper()
-
-    # Generate random key if user didn't provide one
-    if not key:
-        key = generate_random_key(len(plain_text))
-    else:
-        key = key.upper()
-        if len(key) != len(plain_text):
-            raise ValueError("Key length must match plain text length!")
-
-    cipher = ""
-    for p, k in zip(plain_text, key):
-        c = (ord(p) - 65 + (ord(k) - 65)) % 26
-        cipher += chr(c + 65)
-
-    return cipher, key
-
-def decrypt(cipher_text, key):
-    """Decrypt cipher_text using OTP and provided key."""
-    cipher_text = cipher_text.upper()
-    key = key.upper()
-
-    plain = ""
-    for c, k in zip(cipher_text, key):
-        p = (ord(c) - 65 - (ord(k) - 65)) % 26
-        plain += chr(p + 65)
-
-    return plain
-
-# -------------------- TEST AREA  --------------------
-if __name__ == "__main__":
-    plain = input("Enter plain text: ").strip().upper()
-    key = input("Enter key (leave empty for random): ").strip()
-
-    cipher, used_key = encrypt(plain, key if key != "" else None)
-
-    print("Cipher Text:", cipher)
-    print("Used Key:", used_key)
-    print("Decrypted:", decrypt(cipher, used_key))
+        ciphertext = self.normalize(ciphertext)
+        if not self.key:
+            raise ValueError("Key is required for decryption!")
+        plain = ""
+        for c, k in zip(ciphertext, self.key):
+            p = (self.char_to_int(c) - self.char_to_int(k)) % 26
+            plain += self.int_to_char(p)
+        return plain
