@@ -1,4 +1,7 @@
-class RowTranspositionCipher:
+from BaseCipher import BaseCipher
+
+
+class RowTranspositionCipher(BaseCipher):
     def _normalize_key(self, key):
         if isinstance(key, str):
             if " " in key:
@@ -48,4 +51,3 @@ class RowTranspositionCipher:
 
         plaintext_upper = "".join("".join(row) for row in matrix).rstrip(pad_char)
         return self._original_text
-
