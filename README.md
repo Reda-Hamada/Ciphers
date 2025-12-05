@@ -17,4 +17,28 @@ The goal is to create a reusable, modular, and testable cryptography toolkit wit
 ---
 
 ## 🧱 Project Structure
+Cypher/
+├── backend/
+│   ├── main.py          # FastAPI entry point
+│   ├── routers/
+│   │   ├── caesar.py
+│   │   ├── vigenere.py
+│   │   └── hill.py
+│   ├── schemas/
+│   └── crypto.py
+├── core/
+│   ├── config.py
+│   └── crypto/
+│       ├── caesar.py
+│       ├── vigenere.py
+│       └── hill.py
+├── gui/
+│   └── app.py           # Streamlit GUI
+├── tests/
+│   └── test_caesar.py
+├── README.md
+├── requirements.txt
+└── .gitignore
+
+
 
