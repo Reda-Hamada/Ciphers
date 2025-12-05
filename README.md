@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# Ciphers
+Here we solve all classical ciphers , DES ,and AES.
+=======
 # 🔐 Cypher — Cryptography Algorithms Toolkit  
 A clean and modular implementation for classic encryption algorithms using **Python**, **FastAPI**, and a simple GUI.
 
@@ -39,6 +43,3 @@ Cypher/
 ├── README.md
 ├── requirements.txt
 └── .gitignore
-
-
-
