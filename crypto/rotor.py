@@ -68,7 +68,7 @@ class RotorMachine:
         return result
 
     def decrypt(self, text):
-        # لفف الروترز لنفس وضع البداية (Reset)
+
         self.rotor1.offset = 0
         self.rotor2.offset = 0
         self.rotor3.offset = 0

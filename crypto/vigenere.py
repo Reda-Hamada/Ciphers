@@ -1,6 +1,5 @@
 from .BaseCipher import BaseCipher
 
-
 class VigenereCipher(BaseCipher):
     def __init__(self, key):
         self.key = self.normalize(key)

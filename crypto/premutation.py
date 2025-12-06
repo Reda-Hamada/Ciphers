@@ -17,8 +17,8 @@ class RowTranspositionCipher(BaseCipher):
         return order
 
     def encrypt(self, plaintext, key, pad_char='X'):
-        self._original_text = plaintext   # إزالة المسافات
-        text_upper = self._original_text.replace(" ", "").upper()         # تحويل للنص Upper فقط للتشفير
+        self._original_text = plaintext
+        text_upper = self._original_text.replace(" ", "").upper()
 
 
         key_order = self._normalize_key(key)

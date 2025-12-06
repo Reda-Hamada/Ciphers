@@ -1,6 +1,5 @@
 from .BaseCipher import BaseCipher
 
-
 class Feistel(BaseCipher):
     def __init__(self, key):
         key = self.normalize(key)

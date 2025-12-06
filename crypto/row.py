@@ -1,4 +1,4 @@
-from crypto.BaseCipher import BaseCipher
+from .BaseCipher import BaseCipher
 import random
 
 class RowTransposition(BaseCipher):
