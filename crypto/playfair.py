@@ -1,6 +1,6 @@
 import string
 
-from BaseCipher import BaseCipher
+from .BaseCipher import BaseCipher
 
 
 class PlayfairCipher(BaseCipher):

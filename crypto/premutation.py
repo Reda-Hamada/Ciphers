@@ -1,4 +1,4 @@
-from BaseCipher import BaseCipher
+from .BaseCipher import BaseCipher
 
 
 class premutation(BaseCipher):

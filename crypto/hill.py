@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from BaseCipher import BaseCipher
+from .BaseCipher import BaseCipher
 
 class HillCipher(BaseCipher):
     def __init__(self, key):
