@@ -32,7 +32,11 @@ class MonoCipher(BaseCipher):
         plaintext = self.normalize(plaintext)
         ciphertext = ""
         for c in plaintext:
-            ciphertext += self.prepared_key[self.char_to_int(c)]
+            if c.isalpha():  # فقط الأحرف الأبجدية
+                ciphertext += self.prepared_key[self.char_to_int(c)]
+            else:
+                ciphertext += c 
+            #ciphertext += self.prepared_key[self.char_to_int(c)]
         return ciphertext
 
     def decrypt(self, ciphertext):

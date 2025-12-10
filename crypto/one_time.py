@@ -1,3 +1,4 @@
+from streamlit import secrets
 from .BaseCipher import BaseCipher
 
 import random
@@ -21,6 +22,15 @@ class OneTimePad(BaseCipher):
         return ''.join(random.choice(string.ascii_uppercase) for _ in range(length))
 
     def encrypt(self, plaintext):
+        plaintext_bytes = plaintext.encode('utf-8')
+        if not self.key or len(self.key) != len(plaintext_bytes):
+            key_bytes = secrets.token_bytes(len(plaintext_bytes))
+        else:
+            key_bytes = self.key.encode('utf-8')
+            ciphertext_bytes = bytes([p ^ k for p, k in zip(plaintext_bytes, key_bytes)])
+        self.prepared_key = key_bytes
+        return ciphertext_bytes.hex()  # أو base64 للتمثيل النصي
+
         plaintext = self.normalize(plaintext)
 
         # Generate key if not provided

@@ -31,6 +31,12 @@ class RotorMachine(BaseCipher):
         self.rotor1 = Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ")
         self.rotor2 = Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE")
         self.rotor3 = Rotor("BDFHJLCPRTXVZNYEIWGAKMUSQO")
+        
+        if self.key and len(self.key) >= 3:
+            self.rotor1.offset = ord(self.key[0].upper()) - ord('A')
+            self.rotor2.offset = ord(self.key[1].upper()) - ord('A')
+            self.rotor3.offset = ord(self.key[2].upper()) - ord('A')
+        
         return [self.rotor1, self.rotor2, self.rotor3]
 
     def rotate_rotors(self):

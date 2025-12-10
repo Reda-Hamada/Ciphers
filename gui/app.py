@@ -5,7 +5,10 @@ API_URL = "http://localhost:8000"
 
 st.title("Crypto Algorithms")
 
-method = st.selectbox("Method", ["caesar", "vigenere", "hill", "playfair"])
+method = st.selectbox("Method", ["caesar", "vigenere", 
+                                 "hill", "playfair", 
+                                 "premutation", "feistal",
+                                   "mono", "otp", "rotor"])
 text = st.text_input("Text")
 key = st.text_input("Key")
 
