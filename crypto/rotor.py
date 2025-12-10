@@ -1,7 +1,7 @@
 from .BaseCipher import BaseCipher
 
 
-class Rotor(BaseCipher):
+class Rotor:
     def __init__(self, wiring):
         self.wiring = wiring
         self.offset = 0
@@ -18,74 +18,62 @@ class Rotor(BaseCipher):
         return chr((index - self.offset) % 26 + ord('A'))
 
 
-class RotorMachine:
-    def __init__(self):
+class RotorMachine(BaseCipher):
+    def __init__(self, key=None):
+        self.key = key
+        self.rotor1 = None
+        self.rotor2 = None
+        self.rotor3 = None
+        self.prepare_key()
+
+    def prepare_key(self):
+        """Initialize rotors with standard wirings"""
         self.rotor1 = Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ")
         self.rotor2 = Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE")
         self.rotor3 = Rotor("BDFHJLCPRTXVZNYEIWGAKMUSQO")
+        return [self.rotor1, self.rotor2, self.rotor3]
 
     def rotate_rotors(self):
+        """Rotate rotors (with turnover)"""
         self.rotor1.rotate()
-
         if self.rotor1.offset == 0:
             self.rotor2.rotate()
-
         if self.rotor2.offset == 0:
             self.rotor3.rotate()
 
-    def encrypt_char(self, c):
-        if not c.isalpha():
-            return c
+    def encrypt(self, plaintext):
+        plaintext = self.normalize(plaintext)
 
-        c = c.upper()
-
-        c = self.rotor1.forward(c)
-        c = self.rotor2.forward(c)
-        c = self.rotor3.forward(c)
-
-        self.rotate_rotors()
-
-        return c
-
-    def decrypt_char(self, c):
-        if not c.isalpha():
-            return c
-
-        c = c.upper()
-
-        c = self.rotor3.backward(c)
-        c = self.rotor2.backward(c)
-        c = self.rotor1.backward(c)
-
-        self.rotate_rotors()
-
-        return c
-
-    def encrypt(self, text):
-        result = ""
-        for ch in text:
-            result += self.encrypt_char(ch)
-        return result
-
-    def decrypt(self, text):
-
+        # Reset rotors
         self.rotor1.offset = 0
         self.rotor2.offset = 0
         self.rotor3.offset = 0
 
-        result = ""
-        for ch in text:
-            result += self.decrypt_char(ch)
-        return result
+        ciphertext = ""
+        for c in plaintext:
+            c = self.rotor1.forward(c)
+            c = self.rotor2.forward(c)
+            c = self.rotor3.forward(c)
+            ciphertext += c
+            self.rotate_rotors()
 
+        return ciphertext
 
-if __name__ == "__main__":
-    machine = RotorMachine()
+    def decrypt(self, ciphertext):
+        ciphertext = self.normalize(ciphertext)
 
-    text = input("Enter plaintext: ")
-    cipher = machine.encrypt(text)
-    print("Ciphertext:", cipher)
+        # Reset rotors
+        self.rotor1.offset = 0
+        self.rotor2.offset = 0
+        self.rotor3.offset = 0
 
-    machine = RotorMachine()
-    plain = machine.decrypt(cipher)
-    print("Decrypted:", plain)
+        plaintext = ""
+        for c in ciphertext:
+            c = self.rotor3.backward(c)
+            c = self.rotor2.backward(c)
+            c = self.rotor1.backward(c)
+            plaintext += c
+            self.rotate_rotors()
+
+        return plaintext
+

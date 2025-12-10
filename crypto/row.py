@@ -1,56 +1,61 @@
 from .BaseCipher import BaseCipher
-import random
 
 class RowTransposition(BaseCipher):
+    def __init__(self, key):
+        self.key = key
+        self.key_order = None
+        self.prepare_key()
 
-    def __init__(self, key=None, cols=5):
-        self.key = None
-        self.cols = cols
-        self.prepare_key(key)
-
-    def prepare_key(self, key=None):
-        """Prepare numeric key (e.g., 3 1 2). If no key → random permutation."""
-        if key:
-            self.key = [int(x) for x in key.split()]
+    def prepare_key(self):
+        """Convert key to column order"""
+        if isinstance(self.key, str):
+            if " " in self.key:
+                key_list = [int(x) for x in self.key.split()]
+            else:
+                key_list = [int(x) for x in self.key]
+        elif isinstance(self.key, list):
+            key_list = self.key
         else:
-            self.key = list(range(1, self.cols + 1))
-            random.shuffle(self.key)
-        return self.key
+            raise ValueError("Invalid key format")
 
-    def encrypt(self, plaintext):
+        self.key_order = sorted(range(len(key_list)), key=lambda i: key_list[i])
+        return self.key_order
+
+    def encrypt(self, plaintext, pad_char='X'):
         plaintext = self.normalize(plaintext)
-        cols = len(self.key)
-        rows = (len(plaintext) + cols - 1) // cols
-        padded = plaintext.ljust(rows * cols, "X")
-        table = [list(padded[i:i+cols]) for i in range(0, len(padded), cols)]
+        cols = len(self.key_order)
 
-        cipher = ""
-        for col_num in sorted(self.key):
-            col_index = self.key.index(col_num)
-            for r in range(rows):
-                cipher += table[r][col_index]
+        # Pad text
+        if len(plaintext) % cols != 0:
+            plaintext += pad_char * (cols - (len(plaintext) % cols))
 
-        return cipher
+        # Create rows
+        rows = [plaintext[i:i + cols] for i in range(0, len(plaintext), cols)]
 
-    def decrypt(self, ciphertext):
+        # Read by column order
+        ciphertext = ""
+        for col in self.key_order:
+            for row in rows:
+                ciphertext += row[col]
+
+        return ciphertext
+
+    def decrypt(self, ciphertext, pad_char='X'):
         ciphertext = self.normalize(ciphertext)
-        cols = len(self.key)
-        rows = len(ciphertext) // cols
+        cols = len(self.key_order)
+        rows_count = len(ciphertext) // cols
 
-        sorted_key = sorted(self.key)
-        col_lengths = rows
-        columns = {}
-        idx = 0
-        for col_num in sorted_key:
-            columns[col_num] = ciphertext[idx:idx + col_lengths]
-            idx += col_lengths
+        # Create empty matrix
+        matrix = [[""] * cols for _ in range(rows_count)]
 
-        table = []
-        for r in range(rows):
-            row = []
-            for num in self.key:
-                row.append(columns[num][r])
-            table.append(row)
+        # Fill matrix by column order
+        index = 0
+        for col in self.key_order:
+            for row in range(rows_count):
+                matrix[row][col] = ciphertext[index]
+                index += 1
 
-        plain = "".join("".join(row) for row in table)
-        return plain.rstrip("X")
+        # Read row by row
+        plaintext = "".join("".join(row) for row in matrix).rstrip(pad_char)
+        return plaintext
+
