@@ -99,6 +99,9 @@ def decrypt(data: CipherRequest):
             cipher.prepare_key()
             result = cipher.decrypt(data.text)
 
+        elif method == "rotor":
+            cipher = RotorMachine(data.key)
+            result = cipher.decrypt(data.text)
         else:
             raise HTTPException(status_code=400, detail="Invalid cipher method")
 
