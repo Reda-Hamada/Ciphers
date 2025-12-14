@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from crypto.mono import MonoCipher
 from crypto.one_time import OneTimePad
-from crypto.premutation import RowTranspositionCipher
+from crypto.row import RowTransposition
 from .schemas import CipherRequest
 from crypto.caesar import Caesar
 from crypto.vigenere import Vigenere
@@ -11,6 +11,10 @@ from crypto.hill import HillCipher
 from crypto.playfair import PlayfairCipher
 from crypto.feistal import Feistel
 from crypto.rotor import RotorMachine
+
+from crypto.des import DES
+from crypto.aes import AES
+
 
 app = FastAPI()
 
@@ -38,10 +42,10 @@ def encrypt(data: CipherRequest):
             cipher = Feistel(data.key)
             result = cipher.encrypt(data.text)
 
-        elif method == "premutation":
-            cipher = RowTranspositionCipher(data.key)
+        elif method == "row":
+            cipher = RowTransposition(data.key)
             result = cipher.encrypt(data.text)
-
+        
         elif method == "mono":
             cipher = MonoCipher(data.key)
             result = cipher.encrypt(data.text)
@@ -53,6 +57,15 @@ def encrypt(data: CipherRequest):
         elif method == "rotor":
             cipher = RotorMachine(data.key)
             result = cipher.encrypt(data.text)
+
+        elif method == "des":
+            cipher = DES(data.key)
+            result = cipher.encrypt(data.text)
+
+        elif method == "aes":
+            cipher = AES(data.key)
+            result = cipher.encrypt(data.text)
+        
         else:
             raise HTTPException(status_code=400, detail="Invalid cipher method")
 
@@ -85,8 +98,8 @@ def decrypt(data: CipherRequest):
             cipher = Feistel(data.key)
             result = cipher.decrypt(data.text)
 
-        elif method == "premutation":
-            cipher = RowTranspositionCipher(data.key)
+        elif method == "row":
+            cipher = RowTransposition(data.key)
             result = cipher.decrypt(data.text)
 
         elif method == "mono":
@@ -101,6 +114,14 @@ def decrypt(data: CipherRequest):
 
         elif method == "rotor":
             cipher = RotorMachine(data.key)
+            result = cipher.decrypt(data.text)
+
+        elif method == "des":
+            cipher = DES(data.key)
+            result = cipher.decrypt(data.text)
+
+        elif method == "aes":
+            cipher = AES(data.key)
             result = cipher.decrypt(data.text)
         else:
             raise HTTPException(status_code=400, detail="Invalid cipher method")
@@ -122,7 +143,7 @@ def decrypt(data: CipherRequest):
     #     vig = Vigenere(data.key)
     #     return {"result": vig.encrypt(data.text)}
 
-    # if method == "hill":
+    # if method == "hill": 
     #     cipher = HillCipher(data.key)
     #     return {"result": cipher.encrypt(data.text)}
 
